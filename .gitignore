@@ -1,0 +1,15 @@
+# Original full-size photos (2GB+) - only push optimized versions
+Selected Photos/
+
+# Rejected/unused content
+Rejected content/
+
+# Claude config
+.claude/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Thumbnails cache
+Thumbs.db

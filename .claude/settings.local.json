@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(find '/Users/gupi/zstudios Dropbox/guadalupe zavalia/WORK/07 PORTFOLIOS/Website/' -maxdepth 2 -type f \\\\\\(-name *.png -o -name *.jpg -o -name *.gif -o -name *.svg -o -name *.webp \\\\\\))",
+      "Bash(sips --help)",
+      "Read(//Users/gupi/zstudios Dropbox/guadalupe zavalia/WORK/07 PORTFOLIOS/Website/SRC=$BASE/**)",
+      "Bash(chmod +x /tmp/optimize_images.sh)",
+      "Bash(bash /tmp/optimize_images.sh)",
+      "Bash('BASE=/Users/gupi/zstudios Dropbox/guadalupe zavalia/WORK/07 PORTFOLIOS/Website' echo '=== THUMBS ===' find $BASE/thumbs -type f -iname *.jpg -exec ls -la {})",
+      "Bash(2)",
+      "Read(//Users/gupi/zstudios Dropbox/guadalupe zavalia/WORK/07 PORTFOLIOS/Website/{total+=$5; count++} END {printf Files: %d | Total: %.1f MB | Avg: %.0f KB\\\\n, count, total/1048576, total/1024/**)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"http://localhost:8080/thumbs/2-Installations/1-Ngala%20NoticeBoard/220316_GupiBuda_NoticeBoard-46.jpg\")"
+    ]
+  }
+}
