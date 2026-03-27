@@ -55,8 +55,9 @@ body *{cursor:none}
   border-bottom:1px solid var(--brd);
   display:flex;align-items:center;
   height:52px;padding:0 24px;
-  gap:0;position:relative;z-index:100;
+  gap:0;position:sticky;top:0;z-index:9002;
   background:var(--bg);
+  flex-shrink:0;
 }
 .tn-logo{text-decoration:none;margin-right:24px;flex-shrink:0;display:flex;align-items:center}
 .tn-logo-img{height:32px;width:32px;border-radius:50%;object-fit:cover;transition:transform .3s ease}
@@ -572,8 +573,11 @@ body *{cursor:none}
   .tn-cats{display:none !important}
   .tn-right{display:none !important}
   .tn-burger{display:flex !important}
-  #topnav{z-index:9002}
-  #strip{height:70px;padding:0 12px;gap:6px}
+  #app{height:auto;overflow:visible}
+  #stage{overflow:visible}
+  .grid-view{position:relative;inset:auto;overflow:visible}
+  .grid-view.active{display:block}
+  #strip{height:70px;padding:0 12px;gap:6px;position:sticky;bottom:0;z-index:50}
   .strip-sub{padding:4px 10px;height:50px;gap:6px}
   .strip-sub .ss-img{width:36px;height:36px}
   .strip-sub .ss-label{font-size:16px}
