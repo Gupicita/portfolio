@@ -540,11 +540,18 @@ body *{cursor:none}
 .gc-video-play{
   position:absolute;inset:0;z-index:2;
   display:flex;align-items:center;justify-content:center;
-  background:rgba(0,0,0,.25);transition:background .3s;
+  background:rgba(0,0,0,.15);transition:background .3s;
 }
-.gc-video:hover .gc-video-play{background:rgba(0,0,0,.1)}
-.gc-video-play svg{width:48px;height:48px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.3));transition:transform .2s}
-.gc-video:hover .gc-video-play svg{transform:scale(1.1)}
+.gc-video:hover .gc-video-play{background:rgba(0,0,0,.05)}
+.gc-video-play-btn{
+  width:72px;height:72px;border-radius:50%;
+  background:rgba(255,255,255,.92);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 20px rgba(0,0,0,.25);
+  transition:transform .3s cubic-bezier(.16,1,.3,1),box-shadow .3s;
+}
+.gc-video:hover .gc-video-play-btn{transform:scale(1.1);box-shadow:0 6px 28px rgba(0,0,0,.3)}
+.gc-video-play-btn svg{width:28px;height:28px;margin-left:4px}
 .gc-video-play.playing{opacity:0;pointer-events:none}
 .gc-video-label{
   position:absolute;bottom:8px;left:8px;z-index:3;
@@ -3967,13 +3974,16 @@ function generateGridCards(subId) {
     const vidCards = videos.map((f, vi) => {
       const vUrl = getVideoUrl(subId, f.n);
       if (!vUrl) return '';
-      const postSrc = images.length > 0 ? thumbPath(media.folder, images[0].n) : '';
+      // Random poster from medium-quality images (changes on reload)
+      const randImg = images.length > 0 ? images[Math.floor(Math.random() * images.length)] : null;
+      const postSrc = randImg ? medPath(media.folder, randImg.n) : '';
       const vidId = 'vid-' + subId + '-' + vi;
+      const playBtn = `<div class="gc-video-play-btn"><svg viewBox="0 0 24 24" fill="var(--lime)"><polygon points="6,3 20,12 6,21"/></svg></div>`;
       return `<div class="grid-card sz-b gc-video" id="${vidId}">
         <video preload="none" muted loop playsinline></video>
         ${postSrc ? `<img class="gc-video-poster" src="${postSrc}" alt="">` : ''}
         <div class="gc-video-play" onclick="playGridVideo('${vidId}','${vUrl}','${subId}',${vi})">
-          ${playIcon}
+          ${playBtn}
         </div>
         <div class="gc-video-label">▶ Video</div>
       </div>`;
