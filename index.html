@@ -573,10 +573,12 @@ body *{cursor:none}
   .tn-cats{display:none !important}
   .tn-right{display:none !important}
   .tn-burger{display:flex !important}
-  #app{height:auto;overflow:visible}
+  html,body{overflow:auto !important;height:auto !important}
+  #app{height:auto;overflow:visible;display:block}
   #stage{overflow:visible}
   .grid-view{position:relative;inset:auto;overflow:visible}
   .grid-view.active{display:block}
+  .grid-section:first-child{padding-top:20px}
   #strip{height:70px;padding:0 12px;gap:6px;position:sticky;bottom:0;z-index:50}
   .strip-sub{padding:4px 10px;height:50px;gap:6px}
   .strip-sub .ss-img{width:36px;height:36px}
