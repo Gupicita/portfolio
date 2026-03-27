@@ -4048,10 +4048,19 @@ function buildStage() {
       const arrow = document.getElementById('sa-' + cat.id);
       if (!arrow) return;
       // Check both internal scroll (desktop) and window scroll (mobile)
-      // Hide when scrolled past 70% of content (desktop: div scroll, mobile: window scroll)
-      const divPct = div.scrollHeight > 0 ? (div.scrollTop + div.clientHeight) / div.scrollHeight : 0;
-      const winPct = document.documentElement.scrollHeight > 0 ? (window.scrollY + window.innerHeight) / document.documentElement.scrollHeight : 0;
-      const nearEnd = divPct > 0.7 || winPct > 0.7;
+      // Hide when scrolled past 70% of content
+      // Desktop: div has internal scroll. Mobile: div is relative, use window scroll
+      const isMobile = window.innerWidth <= 820;
+      let nearEnd = false;
+      if (isMobile) {
+        const winPct = document.documentElement.scrollHeight > window.innerHeight
+          ? (window.scrollY + window.innerHeight) / document.documentElement.scrollHeight : 0;
+        nearEnd = winPct > 0.85;
+      } else {
+        const divPct = div.scrollHeight > div.clientHeight
+          ? (div.scrollTop + div.clientHeight) / div.scrollHeight : 0;
+        nearEnd = divPct > 0.7;
+      }
       arrow.classList.toggle('hidden', nearEnd);
     };
     div.addEventListener('scroll', fadeArrow, {passive:true});
