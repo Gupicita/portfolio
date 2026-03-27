@@ -10,6 +10,8 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
+html{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
+a,button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 :root{
   --bg:#FFF9E8;
   --sur:#F5F5F5;
@@ -59,19 +61,20 @@ body *{cursor:none}
 .tn-logo{text-decoration:none;margin-right:24px;flex-shrink:0;display:flex;align-items:center}
 .tn-logo-img{height:32px;width:32px;border-radius:50%;object-fit:cover;transition:transform .3s ease}
 .tn-logo:hover .tn-logo-img{transform:scale(1.1)}
-.tn-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;padding:8px;margin-left:auto}
+.tn-burger{display:none;flex-direction:column;gap:5px;background:none;border:none;padding:12px;margin-left:auto;position:relative;z-index:9001}
 .tn-burger span{display:block;width:22px;height:2px;background:var(--txt);transition:all .35s ease}
 .tn-burger.active span:nth-child(1){transform:translateY(7px) rotate(45deg)}
 .tn-burger.active span:nth-child(2){opacity:0;transform:translateX(-8px)}
 .tn-burger.active span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 .mobile-menu{
   position:fixed;top:0;left:0;right:0;bottom:0;
-  background:var(--bg);z-index:98;
+  background:var(--bg);z-index:9000;
   padding:80px 32px 32px;
   flex-direction:column;gap:0;
   opacity:0;visibility:hidden;pointer-events:none;
   transition:opacity .35s ease, visibility .35s ease;
   display:flex;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
 }
 .mobile-menu.open{opacity:1;visibility:visible;pointer-events:auto}
 .mobile-menu.open .mm-item{animation:mmSlideIn .4s ease forwards;opacity:0}
@@ -443,6 +446,7 @@ body *{cursor:none}
   display:none;
   overflow-y:auto;overflow-x:hidden;
   scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
 }
 .grid-view.active{display:block}
 .grid-section{padding:80px 48px 64px;border-bottom:1px solid var(--brd);overflow:hidden;max-width:100%}
@@ -548,6 +552,7 @@ body *{cursor:none}
   .tn-cats{display:none !important}
   .tn-right{display:none !important}
   .tn-burger{display:flex !important}
+  #topnav{z-index:9002}
   #strip{height:70px;padding:0 12px;gap:6px}
   .strip-sub{padding:4px 10px;height:50px;gap:6px}
   .strip-sub .ss-img{width:36px;height:36px}
@@ -596,7 +601,7 @@ body *{cursor:none}
   #lightbox .lb-close{top:10px;right:12px;font-size:24px}
   .home-name{font-size:clamp(28px,8vw,48px) !important}
   .home-sub{font-size:clamp(14px,4vw,20px) !important;margin-bottom:32px !important}
-  .home-cat-btn{font-size:10px;padding:8px 14px}
+  .home-cat-btn{font-size:16px;padding:14px 20px;min-height:48px}
   .ao-inner{padding:32px 16px}
   .ao-name{font-size:clamp(36px,10vw,60px)}
   .ao-intro{font-size:14px}
