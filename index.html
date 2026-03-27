@@ -649,8 +649,9 @@ body *{cursor:none}
   color:var(--muted);
   animation:bounceArrow 1.8s ease-in-out infinite;
   pointer-events:none;
-  transition:opacity .3s;
+  transition:visibility .3s;
 }
+.scroll-arrow.hidden{visibility:hidden;animation:none}
 .scroll-arrow .sa-icon{font-size:18px;margin-top:2px}
 @keyframes bounceArrow{
   0%,100%{transform:translateY(0);opacity:.6}
@@ -4042,14 +4043,19 @@ function buildStage() {
     html += `<div class="scroll-arrow" id="sa-${cat.id}"><span>Scroll for more</span><span class="sa-icon">↓</span></div>`;
     div.innerHTML = html;
     stage.appendChild(div);
-    // fade scroll arrow on scroll
-    div.addEventListener('scroll', () => {
+    // fade scroll arrow when near bottom
+    const fadeArrow = () => {
       const arrow = document.getElementById('sa-' + cat.id);
-      if (arrow) {
-        const atBottom = div.scrollTop + div.clientHeight >= div.scrollHeight - 100;
-        arrow.style.opacity = atBottom ? '0' : '1';
-      }
-    });
+      if (!arrow) return;
+      // Check both internal scroll (desktop) and window scroll (mobile)
+      // Hide when scrolled past 70% of content (desktop: div scroll, mobile: window scroll)
+      const divPct = div.scrollHeight > 0 ? (div.scrollTop + div.clientHeight) / div.scrollHeight : 0;
+      const winPct = document.documentElement.scrollHeight > 0 ? (window.scrollY + window.innerHeight) / document.documentElement.scrollHeight : 0;
+      const nearEnd = divPct > 0.7 || winPct > 0.7;
+      arrow.classList.toggle('hidden', nearEnd);
+    };
+    div.addEventListener('scroll', fadeArrow, {passive:true});
+    window.addEventListener('scroll', fadeArrow, {passive:true});
   });
 
 }
