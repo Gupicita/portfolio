@@ -565,22 +565,23 @@ body *{cursor:none}
   .strip-sub{padding:4px 10px;height:48px;gap:6px}
   .strip-sub .ss-img{width:32px;height:32px}
   .strip-sub .ss-label{font-size:16px;letter-spacing:.03em}
-  .grid-section{padding:40px 14px 32px;box-sizing:border-box;overflow:hidden}
-  .grid-section-title{font-size:clamp(22px,7vw,28px);margin-bottom:20px}
-  .grid-section-title .gst-num{font-size:16px}
-  .grid-section-desc{font-size:16px;margin-bottom:20px}
-  .grid-section-meta{font-size:16px;margin-bottom:20px}
-  .grid-section-tasks .gst-title{font-size:16px}
-  .grid-section-tasks li{font-size:16px;line-height:1.7}
+  .grid-section{padding:32px 16px 40px;box-sizing:border-box;overflow:hidden}
+  .grid-section-title{font-size:clamp(26px,8vw,36px);margin-bottom:16px}
+  .grid-section-title .gst-num{font-size:18px}
+  .grid-section-desc{font-size:18px;margin-bottom:16px;line-height:1.6}
+  .grid-section-meta{font-size:17px;margin-bottom:16px}
+  .grid-section-meta .gsm-label{font-size:17px}
+  .grid-section-tasks .gst-title{font-size:17px}
+  .grid-section-tasks li{font-size:17px;line-height:1.6}
   .grid-card{display:none !important;height:auto}
-  .grid-card:first-child{display:block !important;width:100% !important;height:200px !important;position:relative;flex-grow:0}
+  .grid-card:first-child{display:block !important;width:100% !important;height:55vw !important;position:relative;flex-grow:0}
   .gc-gallery-badge{
     display:flex !important;
     position:absolute;bottom:0;left:0;right:0;
-    padding:10px 14px;
+    padding:14px 16px;
     background:linear-gradient(transparent,rgba(0,0,0,.7));
-    color:#fff;font-family:var(--fm);font-size:11px;
-    letter-spacing:.06em;align-items:center;gap:6px;
+    color:#fff;font-family:var(--fm);font-size:16px;
+    letter-spacing:.04em;align-items:center;gap:8px;
     pointer-events:none;
   }
   .gc-gallery-badge .gcb-arrow{
@@ -599,8 +600,8 @@ body *{cursor:none}
   #lightbox .lb-prev{left:6px}
   #lightbox .lb-next{right:6px}
   #lightbox .lb-close{top:10px;right:12px;font-size:24px}
-  .home-name{font-size:clamp(28px,8vw,48px) !important}
-  .home-sub{font-size:clamp(14px,4vw,20px) !important;margin-bottom:32px !important}
+  .home-name{font-size:clamp(36px,10vw,56px) !important}
+  .home-sub{font-size:clamp(18px,5vw,24px) !important;margin-bottom:32px !important}
   .home-cat-btn{font-size:16px;padding:14px 20px;min-height:48px}
   .ao-inner{padding:32px 16px}
   .ao-name{font-size:clamp(36px,10vw,60px)}
@@ -3917,22 +3918,15 @@ function generateGridCards(subId) {
   for (let i = 0; i < subId.length; i++) hash = ((hash << 5) - hash + subId.charCodeAt(i)) | 0;
   const offset = Math.abs(hash) % sizes.length;
 
-  // If we have real files, reorder: images first, videos last
+  // If we have real files, use images only (videos excluded — too large for static hosting)
   if (media && media.files.length > 0) {
     const images = media.files.filter(f => !f.v);
-    const videos = media.files.filter(f => f.v);
-    const ordered = [...images, ...videos];
-    const totalCount = ordered.length;
-    return ordered.map((f, i) => {
+    const totalCount = images.length;
+    return images.map((f, i) => {
       const sz = sizes[(i + offset) % sizes.length];
       const badge = i === 0 ? `<div class="gc-gallery-badge"><span>View gallery</span><span>${totalCount} photos</span><span class="gcb-arrow">→</span></div>` : '';
-      if (f.v) {
-        const path = encodeURI(media.folder + '/' + f.n);
-        return `<div class="grid-card ${sz} gc-video" onclick="openLightbox('${subId}',${i})"><video muted loop playsinline preload="none" data-src="${path}" onmouseenter="if(!this.src||this.src===location.href){this.src=this.dataset.src+'#t=0.5';this.onloadeddata=()=>this.play()}" onmouseleave="this.pause()" style="width:100%;height:100%;object-fit:cover;display:block"></video><div class="gc-video-label">▶ Video</div>${badge}</div>`;
-      } else {
-        const src = thumbPath(media.folder, f.n);
-        return `<div class="grid-card ${sz}" onclick="openLightbox('${subId}',${i})"><img src="${src}" alt="" loading="lazy" onerror="this.onerror=null;this.style.opacity='.15'">${badge}</div>`;
-      }
+      const src = thumbPath(media.folder, f.n);
+      return `<div class="grid-card ${sz}" onclick="openLightbox('${subId}',${i})"><img src="${src}" alt="" loading="lazy" onerror="this.onerror=null;this.style.opacity='.15'">${badge}</div>`;
     }).join('');
   }
 
@@ -4252,9 +4246,8 @@ function getOrderedFiles(subId) {
   if (ORDERED_FILES[subId]) return ORDERED_FILES[subId];
   const media = MEDIA[subId];
   if (!media) return [];
-  const images = media.files.filter(f => !f.v);
-  const videos = media.files.filter(f => f.v);
-  ORDERED_FILES[subId] = [...images, ...videos];
+  // Images only — videos excluded (too large for static hosting)
+  ORDERED_FILES[subId] = media.files.filter(f => !f.v);
   return ORDERED_FILES[subId];
 }
 
