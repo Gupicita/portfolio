@@ -404,7 +404,7 @@ body *{cursor:none}
   scroll-behavior:smooth;
 }
 .grid-view.active{display:block}
-.grid-section{padding:40px 32px 24px;border-bottom:1px solid var(--brd)}
+.grid-section{padding:40px 32px 24px;border-bottom:1px solid var(--brd);overflow:hidden;max-width:100%}
 .grid-section:last-child{border-bottom:none;padding-bottom:80px}
 .grid-section-title{
   font-family:var(--fs);font-weight:800;
@@ -447,6 +447,7 @@ body *{cursor:none}
 .grid-wrap{
   columns:4;
   column-gap:2px;
+  overflow:hidden;
 }
 .grid-card{
   background:var(--sur);
@@ -454,9 +455,10 @@ body *{cursor:none}
   transition:opacity .2s;
   margin-bottom:2px;
   break-inside:avoid;
+  max-width:100%;
 }
 .grid-card:hover{opacity:.85}
-.grid-card img{width:100%;height:100%;object-fit:cover;display:block}
+.grid-card img,.grid-card video{width:100%;height:100%;object-fit:cover;display:block}
 /* Aspect ratios via padding-top trick — standard ratios, no gaps */
 .grid-card.sz-a{aspect-ratio:16/9}   /* landscape */
 .grid-card.sz-b{aspect-ratio:3/2}    /* landscape */
@@ -473,8 +475,79 @@ body *{cursor:none}
 }
 .grid-card .gc-ph .gc-ico{font-size:20px}
 .grid-card .gc-ph .gc-label{font-size:9px;font-family:var(--fm);letter-spacing:.06em}
-@media(max-width:820px){.grid-wrap{columns:3}}
-@media(max-width:520px){.grid-wrap{columns:2}}
+.gc-gallery-badge{display:none}
+.gc-video{background:var(--txt)}
+.gc-video-label{
+  position:absolute;bottom:8px;left:8px;
+  font-family:var(--fm);font-size:9px;letter-spacing:.08em;
+  color:rgba(255,255,255,.7);padding:3px 8px;
+  background:rgba(0,0,0,.4);pointer-events:none;
+}
+@media(max-width:820px){
+  .grid-wrap{columns:3}
+  .grid-section{padding:24px 16px 16px}
+  .grid-section-title{font-size:clamp(16px,4vw,22px)}
+  .grid-section-desc{font-size:12px}
+  .grid-section-meta{font-size:9px;gap:10px}
+  .grid-section-tasks li{font-size:11px}
+  .cat-drop{display:none !important}
+  #strip{height:70px;padding:0 12px;gap:6px}
+  .strip-sub{padding:4px 10px;height:50px;gap:6px}
+  .strip-sub .ss-img{width:36px;height:36px}
+  .strip-sub .ss-label{font-size:8px}
+}
+@media(max-width:520px){
+  .grid-wrap{columns:2;width:100%}
+  #topnav{height:44px;padding:0 10px}
+  .tn-logo{font-size:12px;margin-right:12px}
+  .cat-btn{padding:0 8px;font-size:9px;height:44px}
+  .tn-right{padding-left:10px;gap:10px}
+  .tn-count{font-size:9px}
+  .tn-about{font-size:9px}
+  #strip{height:60px;padding:0 8px;gap:4px}
+  .strip-sub{padding:3px 8px;height:44px;gap:4px}
+  .strip-sub .ss-img{width:30px;height:30px}
+  .strip-sub .ss-label{font-size:7px;letter-spacing:.03em}
+  .grid-section{padding:16px 8px 12px;box-sizing:border-box;overflow:hidden}
+  .grid-wrap{columns:1 !important}
+  .grid-card{display:none !important}
+  .grid-card:first-child{display:block !important;aspect-ratio:16/9 !important;position:relative}
+  .gc-gallery-badge{
+    display:flex !important;
+    position:absolute;bottom:0;left:0;right:0;
+    padding:10px 14px;
+    background:linear-gradient(transparent,rgba(0,0,0,.7));
+    color:#fff;font-family:var(--fm);font-size:11px;
+    letter-spacing:.06em;align-items:center;gap:6px;
+    pointer-events:none;
+  }
+  .gc-gallery-badge .gcb-arrow{
+    margin-left:auto;font-size:16px;
+    animation:bounceRight 1.5s ease-in-out infinite;
+  }
+  @keyframes bounceRight{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+  .grid-section-title{font-size:16px;gap:6px}
+  .grid-section-title .gst-num{font-size:9px}
+  .grid-section-desc{font-size:11px;line-height:1.5;margin-bottom:12px}
+  .grid-section-meta{font-size:8px;margin-bottom:12px}
+  .grid-section-tasks .gst-title{font-size:8px}
+  .grid-section-tasks li{font-size:10px;line-height:1.6}
+  .scroll-arrow{font-size:8px}
+  #lightbox .lb-arrow{width:36px;height:36px;font-size:16px}
+  #lightbox .lb-prev{left:6px}
+  #lightbox .lb-next{right:6px}
+  #lightbox .lb-close{top:10px;right:12px;font-size:24px}
+  .home-name{font-size:clamp(28px,8vw,48px) !important}
+  .home-sub{font-size:clamp(14px,4vw,20px) !important;margin-bottom:32px !important}
+  .home-cat-btn{font-size:10px;padding:8px 14px}
+  .ao-inner{padding:32px 16px}
+  .ao-name{font-size:clamp(36px,10vw,60px)}
+  .ao-intro{font-size:14px}
+  .ao-grid{grid-template-columns:1fr}
+  .ao-contact-icons{gap:12px}
+  .ao-icon{width:44px;height:44px}
+  .ao-icon svg{width:22px;height:22px}
+}
 
 /* Scroll indicator arrow */
 .scroll-arrow{
@@ -536,13 +609,7 @@ body *{cursor:none}
   font-family:var(--fm);font-size:12px;color:rgba(255,255,255,.5);letter-spacing:.1em;
 }
 
-@media(max-width:820px){
-  .grid-wrap{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
-  .grid-section{padding:24px 16px 16px}
-  #lightbox .lb-arrow{width:40px;height:40px;font-size:18px}
-  #lightbox .lb-prev{left:8px}
-  #lightbox .lb-next{right:8px}
-}
+/* removed — consolidated into main responsive block */
 
 /* IMAGE ARROWS */
 .img-arrow{
@@ -1151,6 +1218,7 @@ function showSubMenu(catId) {
   const cat = CATS.find(c => c.id === catId);
   if (!cat) return;
   closeHome();
+  toggleAbout(false);
   document.getElementById('subMenuTitle').textContent = cat.label;
   const container = document.getElementById('subMenuCats');
   container.innerHTML = '';
@@ -3755,18 +3823,21 @@ function generateGridCards(subId) {
   for (let i = 0; i < subId.length; i++) hash = ((hash << 5) - hash + subId.charCodeAt(i)) | 0;
   const offset = Math.abs(hash) % sizes.length;
 
-  // If we have real files, use them
+  // If we have real files, reorder: images first, videos last
   if (media && media.files.length > 0) {
-    return media.files.map((f, i) => {
+    const images = media.files.filter(f => !f.v);
+    const videos = media.files.filter(f => f.v);
+    const ordered = [...images, ...videos];
+    const totalCount = ordered.length;
+    return ordered.map((f, i) => {
       const sz = sizes[(i + offset) % sizes.length];
+      const badge = i === 0 ? `<div class="gc-gallery-badge"><span>View gallery</span><span>${totalCount} photos</span><span class="gcb-arrow">→</span></div>` : '';
       if (f.v) {
-        // Video — use original (no thumb for videos)
         const path = encodeURI(media.folder + '/' + f.n);
-        return `<div class="grid-card ${sz}" onclick="openLightbox('${subId}',${i})"><video src="${path}#t=0.5" muted loop playsinline preload="metadata" onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0.5" style="width:100%;height:100%;object-fit:cover;display:block"></video></div>`;
+        return `<div class="grid-card ${sz} gc-video" onclick="openLightbox('${subId}',${i})"><video muted loop playsinline preload="none" data-src="${path}" onmouseenter="if(!this.src||this.src===location.href){this.src=this.dataset.src+'#t=0.5';this.onloadeddata=()=>this.play()}" onmouseleave="this.pause()" style="width:100%;height:100%;object-fit:cover;display:block"></video><div class="gc-video-label">▶ Video</div>${badge}</div>`;
       } else {
-        // Image — use thumb for grid
         const src = thumbPath(media.folder, f.n);
-        return `<div class="grid-card ${sz}" onclick="openLightbox('${subId}',${i})"><img src="${src}" alt="" loading="lazy" onerror="this.onerror=null;this.style.opacity='.15'"></div>`;
+        return `<div class="grid-card ${sz}" onclick="openLightbox('${subId}',${i})"><img src="${src}" alt="" loading="lazy" onerror="this.onerror=null;this.style.opacity='.15'">${badge}</div>`;
       }
     }).join('');
   }
@@ -3971,6 +4042,7 @@ function switchCat(subId) {
   if (!ALL_SUBS.find(s => s.id === subId)) return;
   closePanel();
   closeHome();
+  toggleAbout(false);
   document.getElementById('stage').classList.remove('hidden');
 
   const sub = ALL_SUBS.find(s => s.id === subId);
