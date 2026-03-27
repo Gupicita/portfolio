@@ -4153,16 +4153,29 @@ document.querySelectorAll('button,a,.img-click-zone').forEach(el => {
 // ─── LIGHTBOX ─────────────────────────────────────────────────────────────────
 let lbSubId = null, lbIndex = 0, lbTotal = 0;
 
-function getLbTotal(subId) {
+// Cache reordered files (images first, videos last) — matches grid display order
+const ORDERED_FILES = {};
+function getOrderedFiles(subId) {
+  if (ORDERED_FILES[subId]) return ORDERED_FILES[subId];
   const media = MEDIA[subId];
-  if (media && media.files.length > 0) return media.files.length;
+  if (!media) return [];
+  const images = media.files.filter(f => !f.v);
+  const videos = media.files.filter(f => f.v);
+  ORDERED_FILES[subId] = [...images, ...videos];
+  return ORDERED_FILES[subId];
+}
+
+function getLbTotal(subId) {
+  const files = getOrderedFiles(subId);
+  if (files.length > 0) return files.length;
   return PLACEHOLDER_COUNTS[subId] || 20;
 }
 
 function getLbContent(subId, index) {
   const media = MEDIA[subId];
-  if (media && media.files.length > 0 && media.files[index]) {
-    const f = media.files[index];
+  const files = getOrderedFiles(subId);
+  if (files.length > 0 && files[index]) {
+    const f = files[index];
     if (f.v) {
       const path = encodeURI(media.folder + '/' + f.n);
       return `<video class="lb-img" src="${path}" controls autoplay style="max-width:85vw;max-height:80vh"></video>`;
