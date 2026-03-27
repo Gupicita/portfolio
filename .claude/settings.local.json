@@ -10,7 +10,14 @@
       "Bash('BASE=/Users/gupi/zstudios Dropbox/guadalupe zavalia/WORK/07 PORTFOLIOS/Website' echo '=== THUMBS ===' find $BASE/thumbs -type f -iname *.jpg -exec ls -la {})",
       "Bash(2)",
       "Read(//Users/gupi/zstudios Dropbox/guadalupe zavalia/WORK/07 PORTFOLIOS/Website/{total+=$5; count++} END {printf Files: %d | Total: %.1f MB | Avg: %.0f KB\\\\n, count, total/1048576, total/1024/**)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"http://localhost:8080/thumbs/2-Installations/1-Ngala%20NoticeBoard/220316_GupiBuda_NoticeBoard-46.jpg\")"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"http://localhost:8080/thumbs/2-Installations/1-Ngala%20NoticeBoard/220316_GupiBuda_NoticeBoard-46.jpg\")",
+      "Bash(GIT_AUTHOR_NAME=\"Gupi de Zavalia\" GIT_AUTHOR_EMAIL=\"gupi@dezavalia.com\" GIT_COMMITTER_NAME=\"Gupi de Zavalia\" GIT_COMMITTER_EMAIL=\"gupi@dezavalia.com\" git commit -m \"Initial portfolio site with optimized images:*)",
+      "Bash(gh auth:*)",
+      "Bash(git credential-osxkeychain:*)",
+      "Bash(chmod +x /tmp/optimize_v2.sh)",
+      "Bash(bash /tmp/optimize_v2.sh)",
+      "Bash(python3 -c \":*)",
+      "Bash(python3 /tmp/gen_media_v3.py)"
     ]
   }
 }
