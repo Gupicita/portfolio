@@ -725,7 +725,7 @@ body *{cursor:none}
 </div>
 
 <!-- LIGHTBOX -->
-<div id="lightbox">
+<div id="lightbox" onclick="if(event.target===this)closeLightbox()">
   <button class="lb-close" onclick="closeLightbox()">×</button>
   <button class="lb-arrow lb-prev" onclick="lightboxStep(-1)">&#8592;</button>
   <div id="lb-content"></div>
@@ -3776,7 +3776,7 @@ const PLACEHOLDER_COUNTS = {};
 // Subcategory descriptions (for Events, Installations, Graphic Design)
 const SUB_DESCS = {
   'la-fiesta':{desc:'A multicultural festival created from zero, 7,000 attendees, 15 Latin embassies, 70+ artists. Featured as a government case study in precinct activation.',clientLabel:'Work for',client:'Dionysus / City Renewal Authority',year:'Editions: 2023, 2024, 2025',tasks:['Event Concept and Planning (Lead)','Graphic Design (Logo, Font, Social media assets, promotional prints and event signage)','Site Planning and Production Design','Coordination with Embassies, Artists, Stalls, Contractors and Staff','Creation of the Gallery and Cacti (Permanent installations now)']},
-  'lunar-new-year':{desc:'Annual multicultural celebration in Canberra.',clientLabel:'Work for',client:'Dionysus / City Renewal Authority',year:'Editions: 2022, 2023, 2024, 2025, 2026',tasks:['Event Planning (assisted)','Graphic Design (Logo, Social media assets, promotional prints and event signage)','Site Planning and Production Design','Bump in and out Staff Coordination','Event Decoration']},
+  'lunar-new-year':{desc:'Annual multicultural celebration in Canberra with 10,000+ attendees in a single day.',clientLabel:'Work for',client:'Dionysus / City Renewal Authority',year:'Editions: 2022, 2023, 2024, 2025, 2026',tasks:['Event Planning (assisted)','Graphic Design (Logo, Social media assets, promotional prints and event signage)','Site Planning and Production Design','Bump in and out Staff Coordination','Event Decoration']},
   'enlighten':{desc:'Annual light-based arts festival in Canberra.',clientLabel:'Work for',client:'Dionysus / City Renewal Authority',year:'Editions: 2022, 2023, 2024',tasks:['Event Planning (assisted)','Graphic Design (Logo, Social media assets, promotional prints and event signage)','Site Planning and Production Design','Staff Coordination','Event Decoration']},
   '100-years':{desc:'',clientLabel:'Work for',client:'Dionysus / City Renewal Authority',year:'2023',tasks:['Event Concept and Planning (Lead)','Graphic Design (Logo, Font, Social media assets, promotional prints and event signage)','Site Planning and Production Design','Coordination with Artists, Stalls, Contractors and Staff','Design of the Ngala Sitting and Play space (Permanent installation now)']},
   'jurassic-haig-park':{desc:'Large-scale themed activation in Haig Park. Family-friendly event with installations and activities.',clientLabel:'Work for',client:'Dionysus / City Renewal Authority',year:'2023',tasks:['Event Concept and Planning (Lead)','Graphic Design (Logo, Social media assets, promotional prints and event signage)','Site Planning and Production Design','Coordination with Artists, Stalls, Contractors and Staff']},
