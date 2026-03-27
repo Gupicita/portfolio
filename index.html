@@ -533,9 +533,21 @@ body *{cursor:none}
 .grid-card .gc-ph .gc-ico{font-size:20px}
 .grid-card .gc-ph .gc-label{font-size:9px;font-family:var(--fm);letter-spacing:.06em}
 .gc-gallery-badge{display:none}
-.gc-video{background:var(--txt)}
+.gc-video{background:#111;position:relative;overflow:hidden}
+.gc-video video{width:100%;height:100%;object-fit:cover;display:block}
+.gc-video-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .4s;z-index:1}
+.gc-video-poster.hidden{opacity:0;pointer-events:none}
+.gc-video-play{
+  position:absolute;inset:0;z-index:2;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.25);transition:background .3s;
+}
+.gc-video:hover .gc-video-play{background:rgba(0,0,0,.1)}
+.gc-video-play svg{width:48px;height:48px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.3));transition:transform .2s}
+.gc-video:hover .gc-video-play svg{transform:scale(1.1)}
+.gc-video-play.playing{opacity:0;pointer-events:none}
 .gc-video-label{
-  position:absolute;bottom:8px;left:8px;
+  position:absolute;bottom:8px;left:8px;z-index:3;
   font-family:var(--fm);font-size:9px;letter-spacing:.08em;
   color:rgba(255,255,255,.7);padding:3px 8px;
   background:rgba(0,0,0,.4);pointer-events:none;
@@ -3901,6 +3913,22 @@ const SUB_DESCS = {
   'corporate':{desc:'Corporate event coverage, headshots, and business photography.',client:'Various',year:'2019 to 2026'},
 };
 
+// Dropbox video URLs (converted to direct links)
+const VIDEO_URLS = {
+  'la-fiesta/LaFiesta-_24.m4v': 'https://dl.dropboxusercontent.com/scl/fi/7lsyu27535r32j2o3k8pw/LaFiesta-_24.m4v?rlkey=jwfg7oes568t8jenv6pg8ohek&dl=1',
+  'lunar-new-year/LNY-_19.m4v': 'https://dl.dropboxusercontent.com/scl/fi/b9y59yjl4i1raba0dt2zp/LNY-_19.m4v?rlkey=dqxgfb7gdue2o2nv761ei6ml6&dl=1',
+  'argentinas-bicentenary/Ar200_08.m4v': 'https://dl.dropboxusercontent.com/scl/fi/igzutwisbfz40aaj5kc0n/Ar200_08.m4v?rlkey=n1flfbuwujnriizkpfqzr47fe&dl=1',
+  'argentinas-bicentenary/Ar200_09.M4V': 'https://dl.dropboxusercontent.com/scl/fi/l5wy3xq3memozloah6p47/Ar200_09.M4V?rlkey=whkxtf7v1dod2lyq9csi9myva&dl=1',
+  'climactivo/Foro-video-climactivo-compacto-2m.m4v': 'https://dl.dropboxusercontent.com/scl/fi/ros5wuihfld192b3sbid7/Foro-video-climactivo-compacto-2m.m4v?rlkey=mpifuli90vrf65obzb94x3vj6&dl=1',
+  'events-more/More_00.m4v': 'https://dl.dropboxusercontent.com/scl/fi/mfwtsyk9xpg2q55b57d3h/More_00.m4v?rlkey=z0yccmm8o8j97n5cute8bvr8n&dl=1',
+  'digital/Digitals-_18.m4v': 'https://dl.dropboxusercontent.com/scl/fi/7k3d52uu7wj5m5h31g3ne/Digitals-_18.m4v?rlkey=od96rdkdh3t0ws5sndzj1r0jv&dl=1',
+  '3d-assets/3D.m4v': 'https://dl.dropboxusercontent.com/scl/fi/7i8hr41cjcblyaaxmj298/3D.m4v?rlkey=6bpdx52iv51xgnb0d03x2p671&dl=1',
+};
+
+function getVideoUrl(subId, filename) {
+  return VIDEO_URLS[subId + '/' + filename] || null;
+}
+
 // Convert original filename to optimized .jpg path
 function thumbPath(folder, filename) {
   const base = folder.replace('Selected Photos/','');
@@ -3920,16 +3948,38 @@ function generateGridCards(subId) {
   for (let i = 0; i < subId.length; i++) hash = ((hash << 5) - hash + subId.charCodeAt(i)) | 0;
   const offset = Math.abs(hash) % sizes.length;
 
-  // If we have real files, use images only (videos excluded — too large for static hosting)
+  // If we have real files, use them
   if (media && media.files.length > 0) {
     const images = media.files.filter(f => !f.v);
+    const videos = media.files.filter(f => f.v);
     const totalCount = images.length;
-    return images.map((f, i) => {
+    const playIcon = `<svg viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>`;
+
+    // Images first
+    const imgCards = images.map((f, i) => {
       const sz = sizes[(i + offset) % sizes.length];
       const badge = i === 0 ? `<div class="gc-gallery-badge"><span>View gallery</span><span>${totalCount} photos</span><span class="gcb-arrow">→</span></div>` : '';
       const src = thumbPath(media.folder, f.n);
       return `<div class="grid-card ${sz}" onclick="openLightbox('${subId}',${i})"><img src="${src}" alt="" loading="lazy" onerror="this.onerror=null;this.style.opacity='.15'">${badge}</div>`;
-    }).join('');
+    });
+
+    // Videos at the end with Dropbox streaming
+    const vidCards = videos.map((f, vi) => {
+      const vUrl = getVideoUrl(subId, f.n);
+      if (!vUrl) return '';
+      const postSrc = images.length > 0 ? thumbPath(media.folder, images[0].n) : '';
+      const vidId = 'vid-' + subId + '-' + vi;
+      return `<div class="grid-card sz-b gc-video" id="${vidId}">
+        <video preload="none" muted loop playsinline></video>
+        ${postSrc ? `<img class="gc-video-poster" src="${postSrc}" alt="">` : ''}
+        <div class="gc-video-play" onclick="playGridVideo('${vidId}','${vUrl}')">
+          ${playIcon}
+        </div>
+        <div class="gc-video-label">▶ Video</div>
+      </div>`;
+    });
+
+    return imgCards.join('') + vidCards.join('');
   }
 
   // Fallback: placeholder cards for empty categories (Photography)
@@ -4273,6 +4323,29 @@ function getLbContent(subId, index) {
     return `<img class="lb-img" src="${src}" alt="" onerror="this.onerror=null">`;
   }
   return `<div class="lb-placeholder"><span style="font-size:32px">🖼</span><span>${String(index+1).padStart(2,'0')}</span></div>`;
+}
+
+function playGridVideo(vidId, url) {
+  const container = document.getElementById(vidId);
+  if (!container) return;
+  const video = container.querySelector('video');
+  const poster = container.querySelector('.gc-video-poster');
+  const playBtn = container.querySelector('.gc-video-play');
+
+  if (!video.src) {
+    video.src = url;
+    video.load();
+  }
+
+  if (video.paused) {
+    video.play().then(() => {
+      if (poster) poster.classList.add('hidden');
+      if (playBtn) playBtn.classList.add('playing');
+    }).catch(() => {});
+  } else {
+    video.pause();
+    if (playBtn) playBtn.classList.remove('playing');
+  }
 }
 
 function openLightbox(subId, index) {
