@@ -450,8 +450,36 @@ body *{cursor:none}
   -webkit-overflow-scrolling:touch;
 }
 .grid-view.active{display:block}
-.grid-section{padding:80px 48px 64px;border-bottom:1px solid var(--brd);overflow:hidden;max-width:100%}
-.grid-section:last-child{border-bottom:none;padding-bottom:120px}
+.grid-section{
+  padding:80px 48px 64px;
+  border-bottom:none;
+  overflow:hidden;max-width:100%;
+  position:sticky;top:52px;
+  background:var(--bg);
+  z-index:1;
+  border-radius:16px 16px 0 0;
+  box-shadow:0 -8px 30px rgba(0,0,0,0);
+  transition:box-shadow .1s;
+}
+.grid-section:last-child{padding-bottom:120px}
+/* Each subsequent section stacks higher */
+.grid-section:nth-child(1){z-index:1}
+.grid-section:nth-child(2){z-index:2}
+.grid-section:nth-child(3){z-index:3}
+.grid-section:nth-child(4){z-index:4}
+.grid-section:nth-child(5){z-index:5}
+.grid-section:nth-child(6){z-index:6}
+.grid-section:nth-child(7){z-index:7}
+.grid-section:nth-child(8){z-index:8}
+.grid-section:nth-child(9){z-index:9}
+.grid-section:nth-child(10){z-index:10}
+.grid-section:nth-child(11){z-index:11}
+.grid-section:nth-child(12){z-index:12}
+.grid-section:nth-child(13){z-index:13}
+.grid-section:nth-child(14){z-index:14}
+/* Alternate very subtle bg tints for depth */
+.grid-section:nth-child(even){background:#FFF7E2}
+.grid-section.shadow-active{box-shadow:0 -8px 40px rgba(0,0,0,.12)}
 .grid-section-title{
   font-family:var(--fs);font-weight:800;
   font-size:clamp(26px,4vw,42px);line-height:1.1;
@@ -4401,6 +4429,32 @@ document.addEventListener('keydown', e => {
   }
   if (e.key === 'Escape') { closePanel(); toggleAbout(false); }
 });
+
+// ─── STICKY SECTION SHADOWS ──────────────────────────────────────────────────
+function initStickyScrollShadows() {
+  // For each grid-view, watch scroll and add shadow to sections that are "eating" previous ones
+  document.querySelectorAll('.grid-view').forEach(gv => {
+    const handler = () => {
+      const sections = gv.querySelectorAll('.grid-section');
+      const navH = 52;
+      sections.forEach((sec, i) => {
+        const rect = sec.getBoundingClientRect();
+        // Section is sticky (stuck to top) when its top equals the nav height
+        // Add shadow when the section is stuck and being overlapped by the next
+        if (i > 0 && rect.top <= navH + 10) {
+          sec.classList.add('shadow-active');
+        } else {
+          sec.classList.remove('shadow-active');
+        }
+      });
+    };
+    gv.addEventListener('scroll', handler, {passive:true});
+    // Also handle page-level scroll for mobile
+    window.addEventListener('scroll', handler, {passive:true});
+  });
+}
+// Run after stage is built
+setTimeout(initStickyScrollShadows, 100);
 
 // ─── TOUCH / SWIPE ──────────────────────────────────────────────────────────
 (function(){
