@@ -51,7 +51,27 @@ body *{cursor:none}
   gap:0;position:relative;z-index:100;
   background:var(--bg);
 }
-.tn-logo{font-family:var(--fs);font-weight:800;font-size:14px;letter-spacing:.06em;color:var(--txt);text-decoration:none;margin-right:32px;white-space:nowrap;flex-shrink:0}
+.tn-logo{text-decoration:none;margin-right:24px;flex-shrink:0;display:flex;align-items:center}
+.tn-logo-img{height:32px;width:32px;border-radius:50%;object-fit:cover}
+.tn-burger{display:none;flex-direction:column;gap:4px;background:none;border:none;padding:8px}
+.tn-burger span{display:block;width:20px;height:2px;background:var(--txt);transition:all .2s}
+.mobile-menu{
+  display:none;position:fixed;top:52px;left:0;right:0;
+  background:var(--bg);z-index:99;
+  border-bottom:1px solid var(--brd);
+  padding:16px 24px;
+  flex-direction:column;gap:4px;
+  box-shadow:0 8px 24px rgba(0,0,0,.08);
+}
+.mobile-menu.open{display:flex}
+.mm-cats{display:flex;flex-direction:column;gap:4px}
+.mm-item{
+  font-family:var(--fb);font-size:13px;font-weight:500;
+  letter-spacing:.06em;text-transform:uppercase;
+  padding:12px 0;color:var(--muted);text-decoration:none;
+  border-bottom:1px solid var(--brd);transition:color .2s;
+}
+.mm-item:hover,.mm-item.active{color:var(--lime)}
 .tn-cats{display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none;flex:1}
 .tn-cats::-webkit-scrollbar{display:none}
 .cat-btn{
@@ -491,6 +511,9 @@ body *{cursor:none}
   .grid-section-meta{font-size:9px;gap:10px}
   .grid-section-tasks li{font-size:11px}
   .cat-drop{display:none !important}
+  .tn-cats{display:none !important}
+  .tn-right{display:none !important}
+  .tn-burger{display:flex !important}
   #strip{height:70px;padding:0 12px;gap:6px}
   .strip-sub{padding:4px 10px;height:50px;gap:6px}
   .strip-sub .ss-img{width:36px;height:36px}
@@ -755,13 +778,20 @@ body *{cursor:none}
 
   <!-- TOP NAV -->
   <nav id="topnav">
-    <a class="tn-logo" href="#" onclick="openHome();return false">GDZ</a>
+    <a class="tn-logo" href="#" onclick="openHome();return false"><img src="Assets/Color y blanco.png" alt="Gupi" class="tn-logo-img"></a>
     <div class="tn-cats" id="catNav"></div>
     <div class="tn-right">
-      <span class="tn-count" id="countLabel"></span>
-      <a class="tn-about" href="#" onclick="toggleAbout(true);return false">About</a>
+      <a class="tn-about" href="#" onclick="toggleAbout(true);return false">Contact</a>
     </div>
+    <button class="tn-burger" onclick="toggleMobileMenu()">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
+  <!-- Mobile menu -->
+  <div id="mobileMenu" class="mobile-menu">
+    <div class="mm-cats" id="mmCats"></div>
+    <a class="mm-item" href="#" onclick="toggleAbout(true);closeMobileMenu();return false">Contact</a>
+  </div>
 
   <!-- STAGE -->
   <div id="stage" class="hidden"></div>
@@ -1117,6 +1147,7 @@ window.addEventListener('load', () => {
     setTimeout(() => document.getElementById('home').classList.add('enter'), 400);
   }, 1200);
   buildNav();
+  buildMobileMenu();
   buildHome();
   buildStage();
   renderCat(activeSub);
@@ -1164,6 +1195,26 @@ function buildNav() {
 
 function hideAllDrops() {
   document.querySelectorAll('.cat-drop').forEach(d => d.classList.remove('show'));
+}
+
+function buildMobileMenu() {
+  const container = document.getElementById('mmCats');
+  CATS.forEach(c => {
+    const item = document.createElement('a');
+    item.className = 'mm-item';
+    item.href = '#';
+    item.textContent = c.label;
+    item.onclick = (e) => { e.preventDefault(); closeMobileMenu(); goToCategory(c.id); };
+    container.appendChild(item);
+  });
+}
+
+function toggleMobileMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+function closeMobileMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
 }
 
 function buildHome() {
@@ -3956,8 +4007,6 @@ function renderCat(catId, animate) {
   }
 
   updateStrip(catId);
-  const countItems = items.length;
-  document.getElementById('countLabel').textContent = '1/' + countItems;
 }
 
 function phHtml(itemId) {
@@ -4018,7 +4067,7 @@ function galleryStep(subId, dir) {
   if (ctr) ctr.textContent = String(newIdx + 1).padStart(2,'0');
   if (stitle) { stitle.textContent = item.title; stitle.classList.add('slide-fade'); setTimeout(()=>stitle.classList.remove('slide-fade'),500); }
   if (sclient) sclient.textContent = item.client + ' · ' + item.year;
-  document.getElementById('countLabel').textContent = (newIdx+1) + '/' + items.length;
+  // counter removed
   // update dots
   const dotsWrap = document.getElementById('gdots-' + subId);
   if (dotsWrap) {
@@ -4041,6 +4090,7 @@ function switchCat(subId) {
   closePanel();
   closeHome();
   toggleAbout(false);
+  closeMobileMenu();
   document.getElementById('stage').classList.remove('hidden');
 
   const sub = ALL_SUBS.find(s => s.id === subId);
