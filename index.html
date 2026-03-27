@@ -3972,7 +3972,7 @@ function generateGridCards(subId) {
       return `<div class="grid-card sz-b gc-video" id="${vidId}">
         <video preload="none" muted loop playsinline></video>
         ${postSrc ? `<img class="gc-video-poster" src="${postSrc}" alt="">` : ''}
-        <div class="gc-video-play" onclick="playGridVideo('${vidId}','${vUrl}')">
+        <div class="gc-video-play" onclick="playGridVideo('${vidId}','${vUrl}','${subId}',${vi})">
           ${playIcon}
         </div>
         <div class="gc-video-label">▶ Video</div>
@@ -4298,8 +4298,10 @@ function getOrderedFiles(subId) {
   if (ORDERED_FILES[subId]) return ORDERED_FILES[subId];
   const media = MEDIA[subId];
   if (!media) return [];
-  // Images only — videos excluded (too large for static hosting)
-  ORDERED_FILES[subId] = media.files.filter(f => !f.v);
+  // Images first, then videos at the end (matching grid order)
+  const images = media.files.filter(f => !f.v);
+  const videos = media.files.filter(f => f.v);
+  ORDERED_FILES[subId] = [...images, ...videos];
   return ORDERED_FILES[subId];
 }
 
@@ -4315,8 +4317,11 @@ function getLbContent(subId, index) {
   if (files.length > 0 && files[index]) {
     const f = files[index];
     if (f.v) {
-      const path = encodeURI(media.folder + '/' + f.n);
-      return `<video class="lb-img" src="${path}" controls autoplay style="max-width:85vw;max-height:80vh"></video>`;
+      const vUrl = getVideoUrl(subId, f.n);
+      if (vUrl) {
+        return `<video class="lb-img" src="${vUrl}" controls autoplay playsinline style="max-width:85vw;max-height:80vh"></video>`;
+      }
+      return `<div class="lb-placeholder"><span style="font-size:32px">🎬</span><span>Video unavailable</span></div>`;
     }
     // Use medium-quality image for lightbox
     const src = medPath(media.folder, f.n);
@@ -4325,27 +4330,15 @@ function getLbContent(subId, index) {
   return `<div class="lb-placeholder"><span style="font-size:32px">🖼</span><span>${String(index+1).padStart(2,'0')}</span></div>`;
 }
 
-function playGridVideo(vidId, url) {
-  const container = document.getElementById(vidId);
-  if (!container) return;
-  const video = container.querySelector('video');
-  const poster = container.querySelector('.gc-video-poster');
-  const playBtn = container.querySelector('.gc-video-play');
-
-  if (!video.src) {
-    video.src = url;
-    video.load();
-  }
-
-  if (video.paused) {
-    video.play().then(() => {
-      if (poster) poster.classList.add('hidden');
-      if (playBtn) playBtn.classList.add('playing');
-    }).catch(() => {});
-  } else {
-    video.pause();
-    if (playBtn) playBtn.classList.remove('playing');
-  }
+function playGridVideo(vidId, url, subId, vidIndex) {
+  // Open video in lightbox — vidIndex is the index among videos (0-based)
+  const media = MEDIA[subId];
+  if (!media) return;
+  const images = media.files.filter(f => !f.v);
+  const lbIdx = images.length + vidIndex; // videos come after images in ordered files
+  // Clear cached ordered files so it rebuilds with videos
+  delete ORDERED_FILES[subId];
+  openLightbox(subId, lbIdx);
 }
 
 function openLightbox(subId, index) {
