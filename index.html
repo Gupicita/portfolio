@@ -228,7 +228,14 @@ body *{cursor:none}
   padding:0 24px;gap:8px;
   overflow-x:auto;scrollbar-width:none;
   background:var(--bg);position:relative;z-index:10;
+  transition:background .3s,border-color .3s;
 }
+#strip.dark{background:#111;border-top-color:#222}
+#strip.dark .strip-sub{border-color:#333}
+#strip.dark .ss-label{color:rgba(255,255,255,.5)}
+#strip.dark .strip-sub:hover .ss-label{color:#fff}
+#strip.dark .strip-sub.active{border-color:var(--lime)}
+#strip.dark .strip-sub.active .ss-label{color:var(--lime)}
 #strip::-webkit-scrollbar{display:none}
 .strip-sub{
   flex-shrink:0;display:flex;align-items:center;gap:10px;
@@ -450,52 +457,55 @@ body *{cursor:none}
   -webkit-overflow-scrolling:touch;
 }
 .grid-view.active{display:block}
-.grid-section{padding:80px 48px 64px;border-bottom:1px solid var(--brd);overflow:hidden;max-width:100%}
-/* Scroll-reveal for section headers */
-.grid-section-title,.grid-section-desc,.grid-section-meta,.grid-section-tasks{
+.grid-view{background:#111}
+.grid-section{padding:2px;overflow:hidden;max-width:100%}
+.grid-section:last-child{padding-bottom:2px}
+
+/* BENTO INFO CARD — sits inside the grid flow */
+.bento-info{
+  background:#1a1a1a;
+  padding:clamp(28px,3vw,48px);
+  display:flex;flex-direction:column;justify-content:center;
+  min-height:220px;
+  height:auto;
+  width:100%;
   opacity:0;transform:translateY(30px);
   transition:opacity .6s cubic-bezier(.4,0,.2,1), transform .6s cubic-bezier(.4,0,.2,1);
 }
-.grid-section-title.visible,.grid-section-desc.visible,.grid-section-meta.visible,.grid-section-tasks.visible{
-  opacity:1;transform:none;
+.bento-info.visible{opacity:1;transform:none}
+.bento-info .bento-num{
+  font-family:var(--fm);font-size:13px;font-weight:500;
+  letter-spacing:.12em;color:var(--lime);margin-bottom:8px;
 }
-.grid-section:last-child{border-bottom:none;padding-bottom:120px}
-.grid-section-title{
+.bento-info .bento-title{
   font-family:var(--fs);font-weight:800;
-  font-size:clamp(26px,4vw,42px);line-height:1.1;
-  margin-bottom:28px;color:var(--txt);
-  display:flex;align-items:baseline;gap:16px;
+  font-size:clamp(22px,3vw,36px);line-height:1.1;
+  color:#fff;margin-bottom:16px;
 }
-.grid-section-title .gst-num{
-  font-family:var(--fm);font-size:16px;font-weight:500;
-  letter-spacing:.1em;color:var(--lime);
+.bento-info .bento-desc{
+  font-family:var(--fb);font-size:14px;line-height:1.7;
+  color:rgba(255,255,255,.55);margin-bottom:16px;max-width:500px;
 }
-.grid-section-desc{
-  font-family:var(--fb);font-size:16px;line-height:1.8;
-  color:var(--muted);max-width:750px;margin-bottom:32px;
+.bento-info .bento-meta{
+  display:flex;flex-wrap:wrap;gap:16px;margin-bottom:12px;
+  font-family:var(--fm);font-size:12px;color:rgba(255,255,255,.4);
 }
-.grid-section-meta{
-  display:flex;flex-wrap:wrap;gap:24px;margin-bottom:32px;
-  font-family:var(--fm);font-size:16px;letter-spacing:.02em;color:var(--muted);
+.bento-info .bento-meta .bm-label{
+  color:var(--lime);font-weight:600;text-transform:uppercase;
+  letter-spacing:.08em;font-size:11px;
 }
-.grid-section-meta span{display:flex;align-items:center;gap:6px}
-.grid-section-meta .gsm-label{color:var(--lime);font-weight:600;text-transform:uppercase;letter-spacing:.08em;font-size:16px}
-.grid-section-tasks{
-  margin-bottom:40px;max-width:750px;
-}
-.grid-section-tasks .gst-title{
-  font-family:var(--fm);font-size:16px;font-weight:600;
+.bento-info .bento-tasks{margin-top:8px}
+.bento-info .bento-tasks .bt-title{
+  font-family:var(--fm);font-size:11px;font-weight:600;
   letter-spacing:.1em;text-transform:uppercase;
-  color:var(--lime);margin-bottom:12px;
+  color:var(--lime);margin-bottom:8px;
 }
-.grid-section-tasks ul{
-  list-style:none;padding:0;
+.bento-info .bento-tasks ul{list-style:none;padding:0;margin:0}
+.bento-info .bento-tasks li{
+  font-family:var(--fb);font-size:13px;line-height:1.7;
+  color:rgba(255,255,255,.45);padding-left:14px;position:relative;
 }
-.grid-section-tasks li{
-  font-family:var(--fb);font-size:16px;line-height:1.9;
-  color:var(--muted);padding-left:18px;position:relative;
-}
-.grid-section-tasks li::before{
+.bento-info .bento-tasks li::before{
   content:'–';position:absolute;left:0;color:var(--lime);
 }
 .grid-wrap{
@@ -564,9 +574,28 @@ body *{cursor:none}
   color:rgba(255,255,255,.7);padding:3px 8px;
   background:rgba(0,0,0,.4);pointer-events:none;
 }
+/* Mobile swipe counter */
+.swipe-counter{display:none}
 @media(max-width:820px){
-  .grid-card{height:180px}
-  .grid-section{padding:48px 20px 40px}
+  .swipe-counter{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    padding:8px 0 2px;
+  }
+  .swipe-dot{
+    width:5px;height:5px;border-radius:50%;
+    background:rgba(255,255,255,.25);
+    transition:background .25s,transform .25s,width .25s;
+    flex-shrink:0;
+  }
+  .swipe-dot.active{background:var(--lime);width:14px;border-radius:3px}
+}
+@media(max-width:820px){
+  .grid-wrap{flex-wrap:nowrap !important;overflow-x:auto !important;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0 !important;scroll-snap-type:x mandatory}
+  .grid-wrap::-webkit-scrollbar{display:none}
+  .bento-info{width:100% !important;min-width:100% !important;flex-shrink:0 !important;height:auto !important;padding:24px 20px;scroll-snap-align:start}
+  .grid-card{width:88vw !important;min-width:88vw !important;height:58vw !important;flex-grow:0 !important;flex-shrink:0 !important;scroll-snap-align:start}
+  .grid-card:last-child{margin-right:12vw}
+  .grid-section{padding:0;margin-bottom:8px}
   .grid-section-title{font-size:clamp(24px,6vw,32px)}
   .grid-section-desc{font-size:16px}
   .grid-section-meta{font-size:16px;gap:14px}
@@ -603,16 +632,10 @@ body *{cursor:none}
   .grid-section-meta .gsm-label{font-size:16px}
   .grid-section-tasks .gst-title{font-size:16px}
   .grid-section-tasks li{font-size:16px;line-height:1.6}
-  .grid-card{display:none !important;height:auto}
-  .grid-card:first-child{display:block !important;width:100% !important;height:55vw !important;position:relative;flex-grow:0}
+  .grid-wrap{flex-wrap:nowrap !important;gap:0 !important;scroll-snap-type:x mandatory}
+  .bento-info{width:100% !important;min-width:100% !important;flex-shrink:0 !important;height:auto !important}
   .gc-gallery-badge{
-    display:flex !important;
-    position:absolute;bottom:0;left:0;right:0;
-    padding:14px 16px;
-    background:linear-gradient(transparent,rgba(0,0,0,.7));
-    color:#fff;font-family:var(--fm);font-size:16px;
-    letter-spacing:.04em;align-items:center;gap:8px;
-    pointer-events:none;
+    display:none !important;
   }
   .gc-gallery-badge .gcb-arrow{
     margin-left:auto;font-size:16px;
@@ -3927,8 +3950,6 @@ const SUB_DESCS = {
   'events-more':{desc:'Additional event work across various community and government activations.',client:'Various',year:'2021 to 2025'},
   'xmas':{desc:'Designed the giant Merry Christmas sign, the look and feel of the city decorations, the self-standing wishing trees, and the official Christmas star for the city\'s giant tree. Also created all event collateral including signage, print materials and promotional assets.',clientLabel:'Work for',client:'Dionysus / City Renewal Authority',year:'2021 to 2024'},
   'installations-more':{desc:'Additional installations, murals, and public art projects.',clientLabel:'Work for',client:'Dionysus / City Renewal Authority',year:'2021 to 2025'},
-  'photo-more':{desc:'Additional photography work across various genres and clients.',client:'Various',year:'2019 to 2026'},
-  'corporate':{desc:'Corporate event coverage, headshots, and business photography.',client:'Various',year:'2019 to 2026'},
 };
 
 // Dropbox video URLs (converted to direct links)
@@ -3957,6 +3978,65 @@ function medPath(folder, filename) {
   const base = folder.replace('Selected Photos/','');
   const jpgName = filename.replace(/\.[^.]+$/, '.jpg');
   return encodeURI('medium/' + base + '/' + jpgName);
+}
+
+function initSwipeDots(wrap, subId) {
+  const cards = wrap.querySelectorAll('.grid-card');
+  const total = cards.length;
+  if (!total) return;
+
+  // Build dots container (max 10 dots; collapse extra into a count badge)
+  const MAX_DOTS = 10;
+  const dotsEl = document.createElement('div');
+  dotsEl.className = 'swipe-counter';
+  dotsEl.id = 'sdots-' + subId;
+  const shown = Math.min(total, MAX_DOTS);
+  for (let i = 0; i < shown; i++) {
+    const d = document.createElement('div');
+    d.className = 'swipe-dot' + (i === 0 ? ' active' : '');
+    dotsEl.appendChild(d);
+  }
+  wrap.parentElement.insertAdjacentElement('afterend', dotsEl);
+
+  // Update active dot on scroll
+  let ticking = false;
+  wrap.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const cardW = cards[0] ? cards[0].offsetWidth : 1;
+      const rawIdx = Math.round(wrap.scrollLeft / cardW);
+      const idx = Math.max(0, Math.min(total - 1, rawIdx));
+      const dotEls = dotsEl.querySelectorAll('.swipe-dot');
+      // map dot index (compress when total > MAX_DOTS)
+      const dotIdx = total > MAX_DOTS ? Math.round(idx / (total - 1) * (shown - 1)) : idx;
+      dotEls.forEach((d, i) => d.classList.toggle('active', i === dotIdx));
+      ticking = false;
+    });
+  }, {passive: true});
+}
+
+function buildBentoCard(subId, idx) {
+  const sub = ALL_SUBS.find(s => s.id === subId);
+  const info = SUB_DESCS[subId];
+  let h = `<div class="bento-info">
+    <div class="bento-num">${String(idx+1).padStart(2,'0')}</div>
+    <div class="bento-title">${sub ? sub.label : subId}</div>`;
+  if (info) {
+    if (info.desc) h += `<div class="bento-desc">${info.desc}</div>`;
+    const cLabel = info.clientLabel || 'Client';
+    const yrLabel = info.year.startsWith('Editions:') ? 'Editions' : 'Year';
+    const yrVal = info.year.replace('Editions: ','');
+    h += `<div class="bento-meta">
+      <span><span class="bm-label">${cLabel}</span> ${info.client}</span>
+      <span><span class="bm-label">${yrLabel}</span> ${yrVal}</span>
+    </div>`;
+    if (info.tasks && info.tasks.length) {
+      h += `<div class="bento-tasks"><div class="bt-title">Tasks</div><ul>${info.tasks.map(t=>'<li>'+t+'</li>').join('')}</ul></div>`;
+    }
+  }
+  h += `</div>`;
+  return h;
 }
 
 function generateGridCards(subId) {
@@ -4039,9 +4119,7 @@ function buildStage() {
         }
       }
       html += `<div class="grid-section" id="gsec-${s.id}">
-        <div class="grid-section-title"><span class="gst-num">${String(i+1).padStart(2,'0')}</span>${s.label}</div>
-        ${descHtml}
-        <div class="grid-wrap" id="gwrap-${s.id}"></div>
+        <div class="grid-wrap" id="gwrap-${s.id}" data-sub-idx="${i}"></div>
       </div>`;
     });
     html += `<div class="scroll-arrow" id="sa-${cat.id}"><span>Scroll for more</span><span class="sa-icon">↓</span></div>`;
@@ -4240,11 +4318,23 @@ function switchCat(subId) {
     if (gv) {
       gv.classList.add('active');
       // Lazy-load: populate grid wraps only when first shown
+      const onMobile = window.matchMedia('(max-width:820px)').matches;
       parentCat.subs.forEach(s => {
         const wrap = document.getElementById('gwrap-' + s.id);
         if (wrap && !wrap.dataset.loaded) {
-          wrap.innerHTML = generateGridCards(s.id);
+          const idx = parseInt(wrap.dataset.subIdx) || 0;
+          if (onMobile) {
+            // On mobile: bento-info sits above the carousel as a block;
+            // only photo cards go inside the scrollable wrap
+            const tmpDiv = document.createElement('div');
+            tmpDiv.innerHTML = buildBentoCard(s.id, idx);
+            wrap.parentElement.insertBefore(tmpDiv.firstChild, wrap);
+            wrap.innerHTML = generateGridCards(s.id);
+          } else {
+            wrap.innerHTML = buildBentoCard(s.id, idx) + generateGridCards(s.id);
+          }
           wrap.dataset.loaded = '1';
+          if (onMobile) initSwipeDots(wrap, s.id);
         }
       });
       // scroll to the section
@@ -4263,6 +4353,9 @@ function switchCat(subId) {
   }
 
   updateStrip(subId);
+  // Dark strip for grid categories
+  const strip = document.getElementById('strip');
+  if (strip) strip.classList.toggle('dark', isGrid);
   // highlight active sub in dropdown
   document.querySelectorAll('.cat-drop-item').forEach(d => d.classList.toggle('active-sub', d.dataset.sub === subId));
 }
@@ -4448,7 +4541,7 @@ document.addEventListener('keydown', e => {
 
   // Observe after grid is built — use MutationObserver to catch lazy-loaded grids
   function observeElements() {
-    document.querySelectorAll('.grid-card:not(.visible), .grid-section-title:not(.visible), .grid-section-desc:not(.visible), .grid-section-meta:not(.visible), .grid-section-tasks:not(.visible)').forEach(el => {
+    document.querySelectorAll('.grid-card:not(.visible), .bento-info:not(.visible)').forEach(el => {
       observer.observe(el);
     });
   }
