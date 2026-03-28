@@ -28,12 +28,13 @@ body{background:var(--bg);color:var(--txt);font-family:var(--fb);font-size:16px;
 /* Golden ratio typescale (1.618): 16 → 26 → 42 → 68 */
 
 /* CURSOR (desktop only) */
-#cur{position:fixed;z-index:9999;pointer-events:none;width:10px;height:10px;border-radius:50%;background:var(--txt);transform:translate(-50%,-50%);transition:width .3s,height .3s,background .3s,border-radius .3s,opacity .3s;box-shadow:0 0 10px 4px rgba(254,79,9,.35)}
-#cur.hover{width:50px;height:50px;background:transparent;border:1.5px solid var(--txt);opacity:.6;box-shadow:none}
-#cur.dark{background:var(--txt)}
+#cur{position:fixed;z-index:9999;pointer-events:none;width:10px;height:10px;border-radius:50%;background:var(--lime);transform:translate(-50%,-50%);transition:width .3s,height .3s,background .3s,border-radius .3s,opacity .3s}
+#cur.hover{width:50px;height:50px;background:transparent;border:1.5px solid var(--txt);opacity:.6}
+#cur-glow{position:fixed;z-index:9998;pointer-events:none;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.55);filter:blur(10px);transform:translate(-50%,-50%);transition:opacity .3s}
+#cur-glow.hover{opacity:0}
 body *{cursor:none}
 @media(max-width:820px){
-  #cur{display:none !important}
+  #cur,#cur-glow{display:none !important}
   body,body *{cursor:auto !important}
 }
 
@@ -780,7 +781,7 @@ body *{cursor:none}
 </style>
 </head>
 <body>
-<div id="cur"></div>
+<div id="cur-glow"></div><div id="cur"></div>
 
 <!-- LOADER -->
 <div id="loader">
@@ -4410,13 +4411,24 @@ function toggleAbout(open) {
 
 // ─── CURSOR ──────────────────────────────────────────────────────────────────
 const cur = document.getElementById('cur');
+const curGlow = document.getElementById('cur-glow');
+let _mx = window.innerWidth/2, _my = window.innerHeight/2;
+let _gx = _mx, _gy = _my;
 document.addEventListener('mousemove', e => {
-  cur.style.left = e.clientX + 'px';
-  cur.style.top  = e.clientY + 'px';
+  _mx = e.clientX; _my = e.clientY;
+  cur.style.left = _mx + 'px';
+  cur.style.top  = _my + 'px';
 });
+(function animateGlow() {
+  _gx += (_mx - _gx) * 0.1;
+  _gy += (_my - _gy) * 0.1;
+  curGlow.style.left = _gx + 'px';
+  curGlow.style.top  = _gy + 'px';
+  requestAnimationFrame(animateGlow);
+})();
 document.querySelectorAll('button,a,.img-click-zone').forEach(el => {
-  el.addEventListener('mouseenter', () => cur.classList.add('hover'));
-  el.addEventListener('mouseleave', () => cur.classList.remove('hover'));
+  el.addEventListener('mouseenter', () => { cur.classList.add('hover'); curGlow.classList.add('hover'); });
+  el.addEventListener('mouseleave', () => { cur.classList.remove('hover'); curGlow.classList.remove('hover'); });
 });
 
 // ─── LIGHTBOX ─────────────────────────────────────────────────────────────────
